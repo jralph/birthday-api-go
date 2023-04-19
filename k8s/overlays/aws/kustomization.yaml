@@ -1,5 +1,7 @@
 resources:
   - ../../base
+  - ingress.yaml
+
 commonLabels:
   app.kubernetes.io/instance: aws
 
