@@ -42,15 +42,12 @@ spec:
               app.kubernetes.io/name: birthdays-api
       securityContext:
         fsGroup: 65534
+        runAsNonRoot: true
       serviceAccountName: birthdays-api
       volumes:
         - name: haproxy-config
           configMap:
             name: haproxy-config
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       containers:
         - name: haproxy
           image: haproxy:2.7-alpine
