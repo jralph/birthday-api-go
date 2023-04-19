@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: birthdays-api
+spec:
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8081

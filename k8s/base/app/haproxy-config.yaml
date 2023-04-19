@@ -1,0 +1,65 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: haproxy-config
+data:
+  # Relevant docs for HA Proxy:
+  # Cache Config: https://www.haproxy.com/blog/accelerate-your-apis-by-using-the-haproxy-cache/
+  # Queues & Limits: https://www.haproxy.com/blog/protect-servers-with-haproxy-connection-limits-and-queues/
+  # Defaults/Timeouts: https://www.papertrail.com/solution/tips/haproxy-logging-how-to-tune-timeouts-for-performance/
+  haproxy.cfg: |
+    global
+      # As we're 1-1 between HA Proxy servers and app servers, all `maxconn` values are the same
+      # Here we limit the max connections to HA Proxy to 1000
+      maxconn 1000
+    
+    defaults
+      timeout connect 5s
+      timeout client 10s
+      timeout server 10s
+    
+      # The maximum amount of time a http request can persist for (queue timeout + server response time + safety margin)
+      timeout http-request 10s
+    
+      # The amount of time to keep a connection alive for between client and server
+      timeout http-keep-alive 2s
+    
+      # The amount of time to keep a request queued for (if not set, defaults to `timeout connect`)
+      timeout queue 5s
+    
+      # The 3 below settings are similar to http-keep-alive but for web sockets
+      timeout tunnel 2m
+      timeout client-fin 1s
+      timeout server-fin 1s
+
+    # The "frontend" to allow requests to connect to ha proxy on
+    frontend app
+      bind :8081
+      default_backend app
+
+    # The location where requests should be proxied/sent to
+    backend app
+      mode http
+      balance roundrobin
+      
+      # Define an acl to track healthcheck requests
+      acl is_health path_beg /_health
+    
+      # Give health hcheck requests a priority of 1, and non health check requests a priority of 2
+      # The lower the priority, the sooner it gets processed
+      http-request set-priority-class int(1) if is_health
+      http-request set-priority-class int(2) if !is_health
+      
+      # We only have 1 server to connect to, the container running on port 8080
+      # The `maxxcon 60` part allows 60 concurrent connections to the backend before queueing
+      server s1 127.0.0.1:8080 maxconn 60
+    
+    # Enable metrics and statics endpoint for HA Proxy
+    listen stats
+      bind *:9000
+      mode http
+      http-request use-service prometheus-exporter if { path /metrics }
+      stats enable
+      stats uri /stats 
+      stats refresh 10s
+      stats admin if TRUE

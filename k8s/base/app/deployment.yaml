@@ -1,0 +1,102 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: birthdays-api
+spec:
+  progressDeadlineSeconds: 120
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9000"
+        prometheus.io/path: /metrics
+    spec:
+      affinity:
+        podAntiAffinity:
+          # Preferr scheduling on nodes where the app doesn't already exist
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - birthdays-api
+                    - key: app.kubernetes.io/component
+                      operator: In
+                      values:
+                        - app
+                topologyKey: kubernetes.io/hostname
+              weight: 10
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: birthdays-api
+      securityContext:
+        fsGroup: 65534
+      serviceAccountName: birthdays-api
+      volumes:
+        - name: haproxy-config
+          configMap:
+            name: haproxy-config
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      containers:
+        - name: haproxy
+          image: haproxy:2.7-alpine
+          volumeMounts:
+            - name: haproxy-config
+              mountPath: /usr/local/etc/haproxy
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '500m'
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+          ports:
+            - name: haxproxy
+              containerPort: 8081
+            - name: stats
+              containerPort: 9000
+        - name: app
+          image: ghcr.io/jralph/birthdays-api:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_HOST
+              value: birthdays-redis:6379
+          resources:
+            requests:
+              memory: '24Mi'
+              cpu: '50m'
+            limits:
+              memory: '24Mi'
+              cpu: '50m'
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 2
+            periodSeconds: 2
+            successThreshold: 1
+            timeoutSeconds: 1
+            httpGet:
+              path: /_health
+              port: http
+          livenessProbe:
+            periodSeconds: 10
+            failureThreshold: 2
+            httpGet:
+              path: /_health
+              port: http

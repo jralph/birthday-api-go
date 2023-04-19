@@ -1,0 +1,10 @@
+resources:
+  - autoscaler.yaml
+  - accounts.yaml
+  - deployment.yaml
+  - haproxy-config.yaml
+  - poddisruption.yaml
+  - service.yaml
+commonLabels:
+  app.kubernetes.io/name: birthdays-api
+  app.kubernetes.io/component: app

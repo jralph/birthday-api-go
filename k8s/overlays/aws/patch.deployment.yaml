@@ -1,0 +1,22 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: birthdays-api
+spec:
+  template:
+    spec:
+      containers:
+        - name: haproxy
+          lifecycle:
+            # Ensure HA Proxy responds to a shutdown and is given time to finish up
+            # This is configured optimally for AWS ALB
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "kill -SIGUSR1 $(pidof haproxy); sleep 25"]
+        - name: app
+          lifecycle:
+            # Required for some ingresses (notable AWS ALB Ingress)
+            # This gives the AWS ALB time to detect and start using new pods before removing old ones
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 20"]

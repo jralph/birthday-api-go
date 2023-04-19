@@ -1,0 +1,4 @@
+resources: []
+commonLabels:
+  app.kubernetes.io/name: birthdays-api
+  app.kubernetes.io/component: redis

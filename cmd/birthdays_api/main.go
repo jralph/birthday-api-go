@@ -53,6 +53,9 @@ func CreateHandler(store userStore.UserStore) http.Handler {
 		UserStore: store,
 	}
 
+	router.GET("/_health", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		writer.WriteHeader(http.StatusOK)
+	})
 	router.PUT("/hello/:username", helloHandler.PutHelloUsername)
 	router.GET("/hello/:username", helloHandler.GetHelloUsername)
 

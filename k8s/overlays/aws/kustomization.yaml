@@ -1,0 +1,8 @@
+resources:
+  - ../../base
+commonLabels:
+  app.kubernetes.io/instance: aws
+
+patchesStrategicMerge:
+  - patch.autoscaler.yaml
+  - patch.deployment.yaml

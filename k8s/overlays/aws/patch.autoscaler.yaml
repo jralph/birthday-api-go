@@ -1,0 +1,18 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: birthdays-api
+spec:
+  behavior:
+    # The below values should be configured to meet the requirements of the ingress
+    # The below configuration is suited to AWS alb ingress
+    scaleUp:
+      stabilizationWindowSeconds: 10 # Minimum this should be is 10 seconds, due to alb taking ~10 seconds to receive new pods
+      selectPolicy: Max
+      policies:
+        - periodSeconds: 15 # Should be set to the rough time it takes for a pod to start receiving load
+          type: Percent
+          value: 200
+        - periodSeconds: 15 # Should be set to the rough time it takes for a pod to start receiving load
+          type: Pods
+          value: 10
