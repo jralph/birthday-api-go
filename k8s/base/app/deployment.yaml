@@ -67,7 +67,7 @@ spec:
             - name: stats
               containerPort: 9000
         - name: app
-          image: ghcr.io/jralph/birthdays-api:latest
+          image: ghcr.io/jralph/birthdays-api-go:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: REDIS_HOST

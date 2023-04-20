@@ -4,7 +4,9 @@
 
 - Built using GoLang
 - Deployed using Docker + Kubernetes
-- Throughput throttled and protected from DoS/DDoS to some extent through the use of HAProxy
+- Throughput throttled and protected from spikes of load that the autoscaler can't handle to some extent through the use of HAProxy
+  - This somewhat mitigates small DoS/DDoS attacks as well, by throttling requests to keep the app alive, instead of it falling over
+    - Falling over may be what you want if your app is fairly small, you may not want the increased costs of scaling to meet a DoS/DDoS attack or other kind of unexpected spike
 - Autoscaling setup using Kubernetes HPA's
 - All data stored in Redis
 - Full test suite tetsing both the individual handlers as well as the HTTP server

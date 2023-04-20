@@ -40,6 +40,7 @@ RUN echo "scratchuser:x:${uid}:${gid}::/home/scratchuser:/bin/sh" > /scratchpass
 # included in the final docker image
 # You can't be vulnerable to a package exploit if you don't have any packages!
 FROM scratch as app
+LABEL org.opencontainers.image.source=https://github.com/jralph/birthday-api-go
 
 # Pull in assets from the other images to create a minimal image
 COPY --from=user /scratchpasswd /etc/passwd
