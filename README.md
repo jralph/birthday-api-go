@@ -62,3 +62,25 @@ The app assumes sensible defaults for all config values, but these are all confi
 | Redis Password | -redis_password | REDIS_PASSWORD | `P@5Sw0rD123`                                |
 | Redis Database | -redis_db       | REDIS_DB       | `0` `1`                                      |
 | Cache Duration | -cache_duration | CACHE_DURATION | `5s` `1h` `5d`                               |
+
+# Production Architecture
+
+The above described deployment only covers running the application in a development environment.
+This is not ideal, as it simply just exposes the pod to the outside world using an alb.
+
+To make this production ready, we would look at building on the below extra config, likely through Terraform and deployed throguh a CI/CD pipeline instead of manually.
+
+The production infrastructure includes:
+- A CDN setup to provide caching
+  - If caching is not used, the CDN still provides a good benefit by onboarding the user into the AWS network sooner, leading to quicker response times regardless of any caching
+- A WAF setup within the CDN
+  - This allows additional security config such as blocking specific bots, protecting against OWASP top 10 threats, and so on
+  - This also allows additional features such as advanced DDoS protection and 3rd party managed WAF management
+- HTTPS configuration
+  - The app would ideally be configured to serve HTTPS back to the user from CloudFront with a valid certificate
+    - The connection between CloudFront, the ALB, and the HA Proxy container should also be served over HTTPS, but the certificate does not need to be valid
+      - This ensures encryption at all network transit points, and the data is only unencrypted when it reaches the pod within Kubernetes (which shares a local network with its containers)
+
+The production architecture would look something like this:
+
+![Production ready architecture](./diagram.png)
