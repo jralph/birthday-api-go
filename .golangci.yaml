@@ -1,0 +1,22 @@
+run:
+  skip-files:
+    - "^*_test.go$"
+  tests: true
+
+linters:
+  enable:
+    - cyclop
+    - asciicheck
+    - errchkjson
+    - errorlint
+    - gochecknoglobals
+    - gochecknoinits
+    - revive
+    - misspell
+    - noctx
+    - prealloc
+    - tagliatelle
+    - tenv
+    - whitespace
+    - gofmt
+    - govet

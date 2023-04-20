@@ -1,8 +1,8 @@
 package main
 
 import (
-	"birthdays-api/internal/birthdaysApi/handlers"
-	"birthdays-api/internal/birthdaysApi/userStore"
+	"birthdays-api/internal/birthdaysapi/handlers"
+	"birthdays-api/internal/birthdaysapi/userstore"
 	"birthdays-api/internal/utils"
 	"flag"
 	"fmt"
@@ -36,15 +36,15 @@ func main() {
 	log.Printf("Cache Duration: %s", *cacheDuration)
 
 	// Create a new instance of the redis store with the provided credentials
-	store := userStore.NewRedisStore(redisHost, redisPassword, redisDb)
-	cachedStore := userStore.NewInMemoryCachedStore(store, *cacheDuration)
+	store := userstore.NewRedisStore(redisHost, redisPassword, redisDb)
+	cachedStore := userstore.NewInMemoryCachedStore(store, *cacheDuration)
 
 	// Start the http server
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), CreateHandler(cachedStore)))
 }
 
 // CreateHandler handles creation of the http router responsible for serving the apps routes
-func CreateHandler(store userStore.UserStore) http.Handler {
+func CreateHandler(store userstore.UserStore) http.Handler {
 	router := httprouter.New()
 
 	helloHandler := handlers.HelloHandler{

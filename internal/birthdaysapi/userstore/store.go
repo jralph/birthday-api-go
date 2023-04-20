@@ -1,4 +1,4 @@
-package userStore
+package userstore
 
 import (
 	"encoding/json"
@@ -27,12 +27,12 @@ func (t *DateOfBirth) UnmarshalJSON(b []byte) error {
 	str := ""
 	err := json.Unmarshal(b, &str)
 	if err != nil {
-		return fmt.Errorf("error unmarshling DateOfBirth: %s", err)
+		return fmt.Errorf("error unmarshling DateOfBirth: %w", err)
 	}
 
 	dob, err := time.Parse("2006-01-02", str)
 	if err != nil {
-		return fmt.Errorf("error parsing DateOfBirth: %s", err)
+		return fmt.Errorf("error parsing DateOfBirth: %w", err)
 	}
 
 	*t = DateOfBirth(dob)

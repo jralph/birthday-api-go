@@ -51,6 +51,33 @@ kubectl -n <my_namespace> port-forward svc/birthdays-api 8080:8081
 
 You can then browse to the app running at `localhost:8080`.
 
+## Testing
+
+Tests can be run using the following command:
+
+```shell
+go test -cover -race ./...
+```
+
+Test output should look similar to the below:
+
+```text
+ok  	birthdays-api/cmd/birthdaysApi	0.936s	coverage: 23.1% of statements
+ok  	birthdays-api/internal/birthdaysApi/handlers	(cached)	coverage: 82.4% of statements
+ok  	birthdays-api/internal/birthdaysApi/userStore	(cached)	coverage: 46.9% of statements
+?   	birthdays-api/internal/utils	[no test files]
+```
+
+## Linting
+
+Linting is configured to use `GoLangCi-Lint`, available here: [https://golangci-lint.run/usage/install](https://golangci-lint.run/usage/install)
+
+Once installed, linting can be run with the following command:
+
+```shell
+golangci-lint run ./...
+```
+
 ### Config
 
 The app assumes sensible defaults for all config values, but these are all configurable either via command line arguments when running the binary, or via env variables.

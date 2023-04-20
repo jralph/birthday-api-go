@@ -1,7 +1,8 @@
-package userStore
+package userstore
 
 import (
 	"context"
+	"errors"
 	"github.com/redis/go-redis/v9"
 	"time"
 )
@@ -9,8 +10,6 @@ import (
 type RedisStore struct {
 	client *redis.Client
 }
-
-var ctx = context.Background()
 
 func NewRedisStore(host *string, password *string, db *int) *RedisStore {
 	client := redis.NewClient(&redis.Options{
@@ -24,7 +23,7 @@ func NewRedisStore(host *string, password *string, db *int) *RedisStore {
 }
 
 func (r *RedisStore) Put(user *User) error {
-	err := r.client.Set(ctx, user.Username, time.Time(user.DateOfBirth).Format("2006-01-02"), 0).Err()
+	err := r.client.Set(context.Background(), user.Username, time.Time(user.DateOfBirth).Format("2006-01-02"), 0).Err()
 	if err != nil {
 		return err
 	}
@@ -32,10 +31,10 @@ func (r *RedisStore) Put(user *User) error {
 }
 
 func (r *RedisStore) Get(username string) (*User, error) {
-	val, err := r.client.Get(ctx, username).Result()
+	val, err := r.client.Get(context.Background(), username).Result()
 	// If it does not exist, return no user and no error
 	// If there is any other error, return that error
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

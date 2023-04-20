@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"birthdays-api/internal/birthdaysApi/userStore"
+	"birthdays-api/internal/birthdaysapi/userstore"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -42,17 +42,17 @@ func testGetHello(t *testing.T, user string, create bool, days int, statusCode i
 			{Key: "username", Value: user},
 		}
 
-		mockUserStore := userStore.MockUserStore{
-			Users: map[string]*userStore.User{},
+		mockUserStore := userstore.MockUserStore{
+			Users: map[string]*userstore.User{},
 		}
 		if forceErr {
 			mockUserStore.GetError = fmt.Errorf("mock store get error")
 		}
 
 		if create {
-			storeErr := mockUserStore.Put(&userStore.User{
+			storeErr := mockUserStore.Put(&userstore.User{
 				Username:    user,
-				DateOfBirth: userStore.DateOfBirth(time.Now().AddDate(0, 0, days)),
+				DateOfBirth: userstore.DateOfBirth(time.Now().AddDate(0, 0, days)),
 			})
 
 			if storeErr != nil && !forceErr {
@@ -96,17 +96,17 @@ func testPutHello(t *testing.T, user string, body string, create bool, statusCod
 			{Key: "username", Value: user},
 		}
 
-		mockUserStore := userStore.MockUserStore{
-			Users: map[string]*userStore.User{},
+		mockUserStore := userstore.MockUserStore{
+			Users: map[string]*userstore.User{},
 		}
 		if forceErr {
 			mockUserStore.PutError = fmt.Errorf("mock store put error")
 		}
 
 		if create {
-			storeErr := mockUserStore.Put(&userStore.User{
+			storeErr := mockUserStore.Put(&userstore.User{
 				Username:    user,
-				DateOfBirth: userStore.DateOfBirth(time.Now().AddDate(0, 0, 10)),
+				DateOfBirth: userstore.DateOfBirth(time.Now().AddDate(0, 0, 10)),
 			})
 
 			if storeErr != nil && !forceErr {

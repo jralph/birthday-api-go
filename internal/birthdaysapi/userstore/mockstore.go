@@ -1,4 +1,4 @@
-package userStore
+package userstore
 
 import "sync/atomic"
 

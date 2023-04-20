@@ -1,7 +1,7 @@
 package main
 
 import (
-	"birthdays-api/internal/birthdaysApi/userStore"
+	"birthdays-api/internal/birthdaysapi/userstore"
 	"bytes"
 	"fmt"
 	"net/http"
@@ -10,15 +10,15 @@ import (
 )
 
 func TestHTTPServerHelloEndpoints(t *testing.T) {
-	mockStore := &userStore.MockUserStore{
-		Users: map[string]*userStore.User{},
+	mockStore := &userstore.MockUserStore{
+		Users: map[string]*userstore.User{},
 	}
 
 	s := httptest.NewServer(CreateHandler(mockStore))
 	defer s.Close()
 
 	var err error
-	resp := &http.Response{}
+	var resp *http.Response
 
 	// Try and fetch user that does not (yet) exist
 	resp, err = getHelloRequest(s.URL, "joe")
