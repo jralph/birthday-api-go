@@ -43,6 +43,8 @@ spec:
       securityContext:
         fsGroup: 65534
         runAsNonRoot: true
+        runAsGroup: 10652
+        runAsUser: 10652
       serviceAccountName: birthdays-api
       volumes:
         - name: haproxy-config
@@ -71,7 +73,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: REDIS_HOST
-              value: birthdays-redis:6379
+              value: birthdays-api-redis:6379
           resources:
             requests:
               memory: '24Mi'

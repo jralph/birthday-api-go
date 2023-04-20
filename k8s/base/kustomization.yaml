@@ -1,3 +1,4 @@
 resources:
+  - ./accounts.yaml
   - app
   - redis

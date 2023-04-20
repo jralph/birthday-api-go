@@ -1,6 +1,5 @@
 resources:
   - autoscaler.yaml
-  - accounts.yaml
   - deployment.yaml
   - haproxy-config.yaml
   - poddisruption.yaml

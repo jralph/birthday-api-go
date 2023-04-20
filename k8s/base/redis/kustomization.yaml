@@ -1,4 +1,6 @@
-resources: []
+resources:
+  - service.yaml
+  - deployment.yaml
 commonLabels:
   app.kubernetes.io/name: birthdays-api
   app.kubernetes.io/component: redis

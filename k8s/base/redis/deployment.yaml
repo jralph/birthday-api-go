@@ -1,0 +1,27 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: birthdays-api-redis
+spec:
+  replicas: 1
+  template:
+    spec:
+      securityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      serviceAccountName: birthdays-api
+      containers:
+        - name: redis
+          image: redis:6-alpine
+          resources:
+            requests:
+              memory: '124Mi'
+              cpu: '100m'
+            limits:
+              memory: '124Mi'
+              cpu: '100m'
+          ports:
+            - name: redis
+              containerPort: 6379

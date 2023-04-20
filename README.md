@@ -18,7 +18,7 @@
     - Pod affinity is configured to attempt to put pods for the application on separate nodes when possible
     - TopologySpreadConstraints are setup to make a best attempt at spreading the application across zones where possible
 - Minimal Docker image built on Scratch to ensure security and footprint
-- API response time < 3ms on average
+- API response time < 10ms on average
 - In-Memory based caching to ease load on backend storage service
 
 ## Deployment
@@ -46,7 +46,7 @@ You can then access the application using the ingress you have configured via th
 If you are unable to use a domain and ingress, you may use port-forwarding to access the service.
 
 ```shell
-kubectl -n <my_namespace> port-forward svc/birthdays-api 8080:8081
+kubectl -n <my_namespace> port-forward svc/birthdays-api 8080:80
 ```
 
 You can then browse to the app running at `localhost:8080`.
