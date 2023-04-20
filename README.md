@@ -36,3 +36,27 @@ This makes the following assumptions:
 - You have ExternalDNS running and configured to use Route53
 - You have AWS Load Balancer Controller running and configured
 - You have at least 1 node group (or alternative if using Karpenter or Fargate)
+- It is safe to use a storage mechanism that is volatile (non-clustered redis)
+  - If you wish to have a more robust storage solution, deploy a clustered setup of redis (aws provide one of these, or deploy a redis cluster to kubernetes) and configure the app to talk to it using the below mentioned env variables
+
+You can then access the application using the ingress you have configured via the domain you have provided.
+
+If you are unable to use a domain and ingress, you may use port-forwarding to access the service.
+
+```shell
+kubectl -n <my_namespace> port-forward svc/birthdays-api 8080:8081
+```
+
+You can then browse to the app running at `localhost:8080`.
+
+### Config
+
+The app assumes sensible defaults for all config values, but these are all configurable either via command line arguments when running the binary, or via env variables.
+
+| Setting        | Argument        | Env Var        | Examples                                     |
+|----------------|-----------------|----------------|----------------------------------------------|
+| Server Port    | -port           | LISTEN_PORT    | `8080` `5500`                                |
+| Redis Host     | -redis_host     | REDIS_HOST     | `localhost:6379` `redis.some_namespace:6379` |
+| Redis Password | -redis_password | REDIS_PASSWORD | `P@5Sw0rD123`                                |
+| Redis Database | -redis_db       | REDIS_DB       | `0` `1`                                      |
+| Cache Duration | -cache_duration | CACHE_DURATION | `5s` `1h` `5d`                               |

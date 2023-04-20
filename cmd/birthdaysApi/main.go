@@ -3,23 +3,18 @@ package main
 import (
 	"birthdays-api/internal/birthdaysApi/handlers"
 	"birthdays-api/internal/birthdaysApi/userStore"
+	"birthdays-api/internal/utils"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-type MyEvent struct {
-	Name string `json:"name"`
-}
-
 func main() {
-	port := flag.Int("port", 8080, "The port to listen on on, 8080 by default")
+	port := flag.Int("port", 8080, "The port to listen on on, 8080 by default. Can also be the env var LISTEN_PORT")
 	redisHost := flag.String("redis_host", "localhost:6379", "The host of the redis server to connect to including port. Can also be the env var REDIS_HOST")
 	redisPassword := flag.String("redis_password", "", "The password to use to connect to the redis server. Can also be the env var REDIS_PASSWORD")
 	redisDb := flag.Int("redis_db", 0, "The db to use on the redis server. Can also be the env var REDIS_DB")
@@ -28,26 +23,17 @@ func main() {
 	flag.Parse()
 
 	// Check if we have any env variables set to handle overrides
-	if envHost := os.Getenv("REDIS_HOST"); envHost != "" {
-		redisHost = &envHost
-	}
-	if envPassword := os.Getenv("REDIS_PASSWORD"); envPassword != "" {
-		redisPassword = &envPassword
-	}
-	if envDb := os.Getenv("REDIS_DB"); envDb != "" {
-		envDbToInt, err := strconv.Atoi(envDb)
-		if err != nil {
-			log.Fatalf("error parsing REDIS_DB env variable: %s", err)
-		}
-		redisDb = &envDbToInt
-	}
-	if envDuration := os.Getenv("CACHE_DURATION"); envDuration != "" {
-		parsedDuration, err := time.ParseDuration(envDuration)
-		if err != nil {
-			log.Fatalf("error parsing CACHE_DURATION env variable: %s", err)
-		}
-		cacheDuration = &parsedDuration
-	}
+	utils.OverrideFromEnvInt(port, "LISTEN_PORT")
+	utils.OverrideFromEnvStr(redisHost, "REDIS_HOST")
+	utils.OverrideFromEnvStr(redisPassword, "REDIS_PASSWORD")
+	utils.OverrideFromEnvInt(redisDb, "REDIS_DB")
+	utils.OverrideFromEnvDuration(cacheDuration, "CACHE_DURATION")
+
+	log.Printf("Listen Port: %d\n", *port)
+	log.Printf("Redis Host: %s\n", *redisHost)
+	log.Printf("Redis Password Used? %t\n", *redisPassword != "")
+	log.Printf("Redis DB: %d", *redisDb)
+	log.Printf("Cache Duration: %s", *cacheDuration)
 
 	// Create a new instance of the redis store with the provided credentials
 	store := userStore.NewRedisStore(redisHost, redisPassword, redisDb)
@@ -57,6 +43,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), CreateHandler(cachedStore)))
 }
 
+// CreateHandler handles creation of the http router responsible for serving the apps routes
 func CreateHandler(store userStore.UserStore) http.Handler {
 	router := httprouter.New()
 
