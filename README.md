@@ -17,6 +17,7 @@
     - TopologySpreadConstraints are setup to make a best attempt at spreading the application across zones where possible
 - Minimal Docker image built on Scratch to ensure security and footprint
 - API response time < 3ms on average
+- In-Memory based caching to ease load on backend storage service
 
 ## Deployment
 
