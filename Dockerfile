@@ -16,7 +16,7 @@ COPY ./internal/ ./internal/
 RUN --mount=type=cache,mode=0755,target=/go/pkg/mod go test -cover -race ./...
 
 # Build
-RUN --mount=type=cache,mode=0755,target=/go/pkg/mod CGO_ENABLED=0 GOOS=linux go build -o /birthdays-api ./cmd/birthdays_api/main.go
+RUN --mount=type=cache,mode=0755,target=/go/pkg/mod CGO_ENABLED=0 GOOS=linux go build -o /birthdays-api ./cmd/birthdaysApi/main.go
 
 EXPOSE 8080
 

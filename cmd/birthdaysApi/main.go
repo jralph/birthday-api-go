@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -42,8 +43,10 @@ func main() {
 
 	// Create a new instance of the redis store with the provided credentials
 	store := userStore.NewRedisStore(redisHost, redisPassword, redisDb)
+	cachedStore := userStore.NewInMemoryCachedStore(store, time.Second*60)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), CreateHandler(store)))
+	// Start the http server
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), CreateHandler(cachedStore)))
 }
 
 func CreateHandler(store userStore.UserStore) http.Handler {

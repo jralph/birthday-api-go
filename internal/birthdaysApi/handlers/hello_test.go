@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"birthdays-api/internal/birthdaysApi/userStore"
-	"birthdays-api/internal/utils"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -43,7 +42,7 @@ func testGetHello(t *testing.T, user string, create bool, days int, statusCode i
 			{Key: "username", Value: user},
 		}
 
-		mockUserStore := utils.MockUserStore{
+		mockUserStore := userStore.MockUserStore{
 			Users: map[string]*userStore.User{},
 		}
 		if forceErr {
@@ -97,7 +96,7 @@ func testPutHello(t *testing.T, user string, body string, create bool, statusCod
 			{Key: "username", Value: user},
 		}
 
-		mockUserStore := utils.MockUserStore{
+		mockUserStore := userStore.MockUserStore{
 			Users: map[string]*userStore.User{},
 		}
 		if forceErr {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"birthdays-api/internal/birthdaysApi/userStore"
-	"birthdays-api/internal/utils"
 	"bytes"
 	"fmt"
 	"net/http"
@@ -11,7 +10,7 @@ import (
 )
 
 func TestHTTPServerHelloEndpoints(t *testing.T) {
-	mockStore := &utils.MockUserStore{
+	mockStore := &userStore.MockUserStore{
 		Users: map[string]*userStore.User{},
 	}
 
