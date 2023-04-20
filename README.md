@@ -83,4 +83,4 @@ The production infrastructure includes:
 
 The production architecture would look something like this:
 
-![Production ready architecture](./diagram.png)
+![Production ready architecture](./architecture.png)
