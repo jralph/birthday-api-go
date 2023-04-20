@@ -23,6 +23,7 @@ func main() {
 	redisHost := flag.String("redis_host", "localhost:6379", "The host of the redis server to connect to including port. Can also be the env var REDIS_HOST")
 	redisPassword := flag.String("redis_password", "", "The password to use to connect to the redis server. Can also be the env var REDIS_PASSWORD")
 	redisDb := flag.Int("redis_db", 0, "The db to use on the redis server. Can also be the env var REDIS_DB")
+	cacheDuration := flag.Duration("cache_duration", time.Second*60, "The duration an item should be cached for. Can also be the env var CACHE_DURATION")
 
 	flag.Parse()
 
@@ -40,10 +41,17 @@ func main() {
 		}
 		redisDb = &envDbToInt
 	}
+	if envDuration := os.Getenv("CACHE_DURATION"); envDuration != "" {
+		parsedDuration, err := time.ParseDuration(envDuration)
+		if err != nil {
+			log.Fatalf("error parsing CACHE_DURATION env variable: %s", err)
+		}
+		cacheDuration = &parsedDuration
+	}
 
 	// Create a new instance of the redis store with the provided credentials
 	store := userStore.NewRedisStore(redisHost, redisPassword, redisDb)
-	cachedStore := userStore.NewInMemoryCachedStore(store, time.Second*60)
+	cachedStore := userStore.NewInMemoryCachedStore(store, *cacheDuration)
 
 	// Start the http server
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), CreateHandler(cachedStore)))
