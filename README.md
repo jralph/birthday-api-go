@@ -78,6 +78,8 @@ Once installed, linting can be run with the following command:
 golangci-lint run ./...
 ```
 
+Linting is configured to only lint non-test files (ignores `^*_test.go$`).
+
 ### Config
 
 The app assumes sensible defaults for all config values, but these are all configurable either via command line arguments when running the binary, or via env variables.
